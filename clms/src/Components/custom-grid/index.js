@@ -8,11 +8,14 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { CircularProgress } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 
 export default function CustomGridComponent({
   columns = [],
   data = [],
   isLoading = false,
+  checkboxSelection = false,
+  ...rest
 }) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -30,13 +33,13 @@ export default function CustomGridComponent({
     <CircularProgress />
   ) : (
     <Paper sx={{ width: "100%", overflow: "hidden" }}>
-      <TableContainer sx={{ maxHeight: 440 }}>
+      {/* <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
+              {columns.map((column, index) => (
                 <TableCell
-                  key={column.id}
+                  key={index}
                   align={column.align}
                   style={{ minWidth: column.minWidth }}
                 >
@@ -75,7 +78,18 @@ export default function CustomGridComponent({
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      /> */}
+
+      <div style={{ height: 300, width: "100%" }}>
+        <DataGrid
+          rows={data}
+          columns={columns}
+          checkboxSelection={checkboxSelection}
+          disableRowSelectionOnClick
+          paginationMode="off"
+          {...rest}
+        />
+      </div>
     </Paper>
   );
 }
