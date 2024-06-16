@@ -7,11 +7,7 @@ export const apiCall = async (method = 'get', endpoint = '', data = null) => {
     const response = await axios({
       method,
       url: `${endpoint}`,
-      data,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + token
-      }
+      data
     })
 
     return response
