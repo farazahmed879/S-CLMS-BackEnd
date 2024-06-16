@@ -17,7 +17,7 @@ const ProductsComponent = () => {
   const [product, setProduct] = useState(null);
   const [rowData, setRowData] = useState([]);
   const [openSelector, setOpenSelector] = useState(false);
-  const columns = [
+  const [columns, setColumns] = useState([
     { field: "name", headerName: "Name", width: 150 },
     { field: "version", headerName: "Version", width: 150 },
     {
@@ -47,7 +47,7 @@ const ProductsComponent = () => {
         );
       },
     },
-  ];
+  ]);
 
   function createData(id, name, version, description) {
     return { id, name, version, description };
@@ -111,7 +111,8 @@ const ProductsComponent = () => {
   const getProducts = async () => {
     try {
       setIsloading(true);
-      const url = EndPoints.products;
+      let url = EndPoints.products;
+      if (isAdmin) url += `?useId=${userId}`;
       const result = await apiCall("get", url);
       if (result) setRowData(result?.data);
       setIsloading(false);
@@ -122,6 +123,16 @@ const ProductsComponent = () => {
   };
 
   useEffect(() => {
+    if (!isAdmin) {
+      let cols = [...columns];
+      cols.splice(3, 0, {
+        field: "isActivated",
+        headerName: "Activated",
+        width: 150,
+        renderCell: (params) =>
+          params?.row?.isActivated ? "Active" : "not Active",
+      });
+    }
     // getProducts();
   }, []);
 

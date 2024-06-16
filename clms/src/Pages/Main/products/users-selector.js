@@ -1,6 +1,6 @@
 import CustomGridComponent from "../../../Components/custom-grid";
 import CustomModal from "../../../Components/modal";
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -9,22 +9,30 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Checkbox from "@mui/material/Checkbox";
 import Avatar from "@mui/material/Avatar";
 import { Divider } from "@mui/material";
+const DummyData = [
+  { id: 1, name: "Faraz" },
+  { id: 2, name: "Ahmed" },
+  { id: 3, name: "Sheikh" },
+  { id: 4, name: "bilal" },
+  { id: 5, name: "moosani" },
+  { id: 6, name: "Abdul" },
+  { id: 7, name: "rafay" },
+  { id: 8, name: "hadi" },
+  { id: 9, name: "zuhaib" },
+  { id: 10, name: "bisham" },
+];
 const UserSelector = ({ open, setOpen, product }) => {
   //   const columns = [{ field: "name", headerName: "Name", width: 170 }];
-  const [checked, setChecked] = React.useState([1]);
+  const [checked, setChecked] = useState([1]);
+  const [usersList, setUsersList] = useState([]);
 
-  const data = [
-    { id: 1, name: "Faraz" },
-    { id: 2, name: "Ahmed" },
-    { id: 3, name: "Sheikh" },
-    { id: 4, name: "bilal" },
-    { id: 5, name: "moosani" },
-    { id: 6, name: "Abdul" },
-    { id: 7, name: "rafay" },
-    { id: 8, name: "hadi" },
-    { id: 9, name: "zuhaib" },
-    { id: 10, name: "bisham" },
-  ];
+  useEffect(() => {
+    fetchUsers();
+  });
+
+  const fetchUsers = () => {
+    setUsersList(DummyData);
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -34,7 +42,7 @@ const UserSelector = ({ open, setOpen, product }) => {
   const handleOk = () => {
     console.log(checked);
     let payload = {
-      users: data.filter((d) => checked.includes(d.id)),
+      users: usersList.filter((d) => checked.includes(d.id)),
       productId: product?.id,
     };
     // hit api
@@ -67,7 +75,7 @@ const UserSelector = ({ open, setOpen, product }) => {
       handleOk={handleOk}
     >
       <List dense sx={{ width: "20rem", bgcolor: "background.paper" }}>
-        {data.map((value) => {
+        {usersList.map((value) => {
           const labelId = `checkbox-list-secondary-label-${value.id}`;
           return (
             <>
