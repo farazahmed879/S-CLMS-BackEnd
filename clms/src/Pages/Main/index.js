@@ -9,6 +9,7 @@ import { Route, Routes } from "react-router-dom";
 import ProductsComponent from "./products";
 import ProductLicenseComponent from "./product-license";
 import DashboardComponent from "./dashboard";
+import CreateOrEditProductComponent from "./products/create-or-edit";
 
 const drawerWidth = 240;
 const MainComponent = () => {
@@ -38,6 +39,7 @@ const MainComponent = () => {
         <Routes>
           <Route path="*" element={<DashboardComponent />} />
           <Route path="products" element={<ProductsComponent />} />
+          <Route path="products/create-product" element={<CreateOrEditProductComponent />} />
           <Route
             path="products-license"
             element={<ProductLicenseComponent />}

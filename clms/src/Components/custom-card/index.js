@@ -1,6 +1,6 @@
-import { Card } from "@mui/material";
+import { Card, CircularProgress } from "@mui/material";
 
-const CustomCard = ({ children }) => {
-  return <Card>{children}</Card>;
+const CustomCard = ({ children , isLoading = false }) => {
+  return isLoading ?  <CircularProgress /> : <Card>{children}</Card>;
 };
 export default CustomCard;

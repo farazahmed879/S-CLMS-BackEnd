@@ -18,7 +18,7 @@ namespace CLMS_BackEnd.Services.Products
 
 
 
-        public async Task<List<ProductList>> GetAll(int roleId)
+        public async Task<List<ProductList>> GetAll()
         {
             var products = await _productRepository.GetProducts();
 

@@ -1,28 +1,64 @@
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import CustomButton from "../../../Components/custom-button";
 import CustomCard from "../../../Components/custom-card";
+import { CardActions, CardContent, CardHeader, Grid } from "@mui/material";
+import CustomInputComponent from "../../../Components/custom-input";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import axios from "axios";
+import { AuthenticateEndPoints } from "../../../Configs/end-points";
 
 const RegisterComponent = () => {
   const [formType, setFormType] = useState(0);
   const navigate = useNavigate();
 
+  const schema = yup.object().shape({
+    username: yup.string().required(),
+    password: yup.string().required(),
+  });
+
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur",
+    resolver: yupResolver(schema),
+  });
+
   const handleClick = (type) => {
     setFormType(type);
   };
 
-  const handleLogin = (values) => {
-    return navigate("main");
+  const onSubmit = async (form) => {
+    handleGetToken(form);
+  };
 
-    // if (values?.username && values?.password) {
-    //   // Navigate to DrawerSideBar upon successful login
-    // } else {
-    //   console.log("Invalid username or password");
-    // }
+  const handleGetToken = async (form) => {
+    try {
+      const data = {
+        username: form.username,
+        password: form.password,
+      };
+      const result = await axios.post(AuthenticateEndPoints.login, data);
+      if (result) {
+        localStorage.setItem("token", result?.data?.token);
+        navigate("/")
+
+      }
+    } catch (errors) {
+      console.log(errors);
+    }
   };
 
   return (
-    <div className="container-sm 540px">
+    <div
+      className="container-sm 540px"
+      style={{ display: "flex", justifyContent: "center", marginTop: 20 }}
+    >
       <div className="row">
         <div
           style={{
@@ -31,32 +67,81 @@ const RegisterComponent = () => {
             width: "500px",
           }}
         >
-          <CustomCard
-            title="Welcome to ScorEXEC"
-            bordered={false}
-            style={{ width: 500 }}
-          >
-            {formType === 0 && (
-              <>
-                <p>
-                  Login to Stay Update: {"  "}
-                  <CustomButton type="primary" onClick={() => handleClick(1)}>
-                    Login
-                  </CustomButton>{" "}
-                  <CustomButton type="primary" onClick={() => handleClick(0)}>
-                    Back
-                  </CustomButton>{" "}
-                </p>
-                <p>
-                  Not found?, Just signUp!{"  "}
-                  <CustomButton type="primary" danger onClick={() => handleClick(2)}>
-                    SignUp
-                  </CustomButton>{" "}
-                </p>
-              </>
-            )}
-            {formType === 1 && <></>}
-            {formType === 2 && <></>}
+          <CustomCard style={{ width: 500 }}>
+            <CardHeader></CardHeader>
+            <CardContent>
+              <form
+                noValidate
+                autoComplete="off"
+                onSubmit={handleSubmit(onSubmit)}
+              >
+                <Grid container>
+                  {formType === 0 && (
+                    <>
+                      <p>
+                        Login to Stay Update: {"  "}
+                        <CustomButton
+                          variant="contained"
+                          onClick={() => handleClick(1)}
+                        >
+                          Login
+                        </CustomButton>
+                        <CustomButton
+                          variant="outlined"
+                          onClick={() => handleClick(0)}
+                        >
+                          Back
+                        </CustomButton>
+                      </p>
+                      <p>
+                        Not found?, Just signUp!{"  "}
+                        <CustomButton
+                          type="primary"
+                          danger
+                          onClick={() => handleClick(2)}
+                        >
+                          SignUp
+                        </CustomButton>{" "}
+                      </p>
+                    </>
+                  )}
+                  {formType === 1 && (
+                    <>
+                      <Grid item xs={12}>
+                        <CustomInputComponent
+                          control={control}
+                          title="Username"
+                          name="username"
+                          errors={errors}
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <CustomInputComponent
+                          control={control}
+                          title="Password"
+                          name="password"
+                          errors={errors}
+                          type="password"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <CustomButton variant="contained" type="submit">
+                          Login
+                        </CustomButton>
+                        <CustomButton
+                          variant="outlined"
+                          onClick={() => handleClick(0)}
+                        >
+                          Back
+                        </CustomButton>
+                      </Grid>
+                    </>
+                  )}
+                  {formType === 2 && <></>}
+                </Grid>
+              </form>
+            </CardContent>
+            <CardActions></CardActions>
           </CustomCard>
         </div>
       </div>

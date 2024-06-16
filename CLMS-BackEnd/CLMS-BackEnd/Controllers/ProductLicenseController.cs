@@ -20,11 +20,11 @@ namespace CLMS_BackEnd.Controllers
         }
         // GET: api/<ProductLicenseController>
         [HttpGet]
-        public async Task<List<ProductLicenseListDto>> Get()
+        public async Task<List<ProductLicenseListDto>> Get(int? productId)
         {
             try
             {
-                var results = await _productLicenseService.GetAll();
+                var results = await _productLicenseService.GetAll(productId);
                 return results;
             }
             catch (Exception ex) { throw; }
