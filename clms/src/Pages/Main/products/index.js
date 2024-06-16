@@ -144,7 +144,11 @@ const ProductsComponent = () => {
         />
       </CustomCard>
 
-      <UserSelector open={openSelector} setOpen={setOpenSelector} />
+      <UserSelector
+        open={openSelector}
+        setOpen={setOpenSelector}
+        product={product}
+      />
     </>
   );
 };
