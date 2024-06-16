@@ -21,7 +21,7 @@ namespace CLMS_BackEnd.Repositories.Products
         }
         public async Task<List<Product>> GetProducts()
         {
-            return await _dataContext.Products.ToListAsync();
+            return await _dataContext.Products.Include(i=> i.License).ToListAsync();
         }
         public async Task<bool> InsertProduct(Product product_)
         {

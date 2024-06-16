@@ -1,6 +1,11 @@
 ﻿using CLMS_BackEnd.Services.Users.Dto;
 using SendGrid.Helpers.Mail;
 using SendGrid;
+using System.Security.Cryptography;
+using System.Text;
+using Mailjet.Client;
+using Newtonsoft.Json.Linq;
+using Azure.Core;
 
 namespace CLMS_BackEnd.Services.EmailServices
 {
@@ -28,5 +33,30 @@ namespace CLMS_BackEnd.Services.EmailServices
             return false;
         }
 
+        public string GenerateRandomKey(int length)
+        {
+            try
+            {
+                using (var rng = new RNGCryptoServiceProvider())
+                {
+                    byte[] data = new byte[length];
+                    rng.GetBytes(data);
+                    StringBuilder result = new StringBuilder(length * 2);
+                    foreach (byte b in data)
+                    {
+                        result.Append(b.ToString("x2"));
+                    }
+                    return result.ToString();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
     }
+
+
 }

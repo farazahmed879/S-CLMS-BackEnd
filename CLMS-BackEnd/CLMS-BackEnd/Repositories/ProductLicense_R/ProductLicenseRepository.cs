@@ -49,6 +49,7 @@ namespace CLMS_BackEnd.Repositories.ProductLicense_R
             try
             {
                 await _dataContext.License.AddRangeAsync(productLicense_);
+                await _dataContext.SaveChangesAsync();
                 return true;
             }
             catch (Exception)

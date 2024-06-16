@@ -7,15 +7,16 @@ import { Link } from "react-router-dom";
 import { apiCall } from "../../../service/common-service";
 import { EndPoints } from "../../../Configs/end-points";
 import { Key } from "@mui/icons-material";
-import { S_Alert, UserRole } from "../../../utils/helper";
+import { S_Alert, UserRole, showSwalPopUp } from "../../../utils/helper";
 import CustomModal from "../../../Components/modal";
 import UserSelector from "./users-selector";
 
 const ProductsComponent = () => {
   const { isAdmin, userId } = UserRole();
   const [isLoading, setIsloading] = useState(false);
-  const [product, setProduct] = useState(null);
   const [rowData, setRowData] = useState([]);
+  const [product, setProduct] = useState([]);
+  const [users, setUsers] = useState([]);
   const [openSelector, setOpenSelector] = useState(false);
   const [columns, setColumns] = useState([
     { field: "name", headerName: "Name", width: 150 },
@@ -49,76 +50,90 @@ const ProductsComponent = () => {
     },
   ]);
 
-  function createData(id, name, version, description) {
-    return { id, name, version, description };
-  }
-
   const handleGenerateKey = (data) => {
     setProduct(data);
     setOpenSelector(true);
+    getUsers();
+  };
+
+  const handleSelectUsers = (e) => {
+    setOpenSelector(e);
   };
 
   const handleActivate = async (id) => {
-    const result = await S_Alert({
-      title: "Please Provide Activation Key",
-      input: "text",
-      showCancelButton: true,
-      confirmButtonText: "Activate",
-      // showLoaderOnConfirm: true,
-      // preConfirm: async (login) => {
-      //   try {
-      //     const githubUrl = `
-      //   https://api.github.com/users/${login}
-      // `;
-      //     const response = await fetch(githubUrl);
-      //     if (!response.ok) {
-      //       return Swal.showValidationMessage(`
-      //     ${JSON.stringify(await response.json())}
-      //   `);
-      //     }
-      //     return response.json();
-      //   } catch (error) {
-      //     Swal.showValidationMessage(`
-      //   Request failed: ${error}
-      // `);
-      //   }
-      // },
-    });
-    if (result.isConfirmed) {
-      let payload = { key: result?.value, userId, productId: id };
-      // api verify
+    try {
+      const result = await S_Alert({
+        title: "Please Provide Activation Key",
+        input: "text",
+        showCancelButton: true,
+        confirmButtonText: "Activate",
+      });
+      if (result.isConfirmed) {
+        let payload = { key: result?.value, userId, productId: id };
+        const url = EndPoints.activateProduct;
+        setIsloading(true);
+        const response = await apiCall("put", url, payload);
+        console.log("Response", response);
+        setIsloading(true);
+        if (response?.data?.success) {
+          showSwalPopUp("Success", "Successfull Submitted", "success");
+          getProducts()
+        }
+      }
+    } catch (errors) {
+      setIsloading(false);
     }
+
+    // api verify
   };
 
-  const rows = [
-    createData(1, "India", "IN", 1324171354),
-    createData(2, "China", "CN", 1403500365),
-    createData(3, "Italy", "IT", 60483973),
-    createData(4, "United States", "US", 327167434),
-    createData(5, "Canada", "CA", 37602103),
-    createData(6, "Australia", "AU", 25475400),
-    createData(7, "Germany", "DE", 83019200),
-    createData(8, "Ireland", "IE", 4857000),
-    createData(9, "Mexico", "MX", 126577691),
-    createData(10, "Japan", "JP", 126317000),
-    createData(11, "France", "FR", 67022000),
-    createData(12, "United Kingdom", "GB", 67545757),
-    createData(13, "Russia", "RU", 146793744),
-    createData(14, "Nigeria", "NG", 200962417),
-    createData(15, "Brazil", "BR", 210147125),
-  ];
+  const getUsers = async () => {
+    try {
+      setIsloading(true);
+      let url = EndPoints.users;
+      const result = await apiCall("get", url);
+      setIsloading(false);
+      if (result) {
+        console.log("results", result);
+        setUsers(result?.data);
+      }
+    } catch (errors) {
+      setIsloading(false);
+      console.log(errors);
+    }
+  };
 
   const getProducts = async () => {
     try {
       setIsloading(true);
       let url = EndPoints.products;
-      if (isAdmin) url += `?useId=${userId}`;
+      if (!isAdmin) url += `?userId=${userId}`;
       const result = await apiCall("get", url);
       if (result) setRowData(result?.data);
       setIsloading(false);
     } catch (errors) {
       setIsloading(false);
       console.log(errors);
+    }
+  };
+
+  const handleSubmitUser = async (checked = []) => {
+    try {
+      console.log("checked", checked);
+      let payload = {
+        users: users.filter((d) => checked.includes(d.id)),
+        productId: product?.id,
+      };
+      const url = EndPoints.generateKey;
+      setIsloading(true);
+      const response = await apiCall("put", url, payload);
+      setIsloading(false);
+      if (response) {
+        showSwalPopUp("Success", "Submitted Successfully", "success");
+        setOpenSelector(false);
+      }
+    } catch (errors) {
+      setIsloading(false);
     }
   };
 
@@ -130,10 +145,11 @@ const ProductsComponent = () => {
         headerName: "Activated",
         width: 150,
         renderCell: (params) =>
-          params?.row?.isActivated ? "Active" : "not Active",
+          params?.row?.isActivated ? "Activated" : "--",
       });
+      setColumns(cols)
     }
-    // getProducts();
+    getProducts();
   }, []);
 
   return (
@@ -150,15 +166,15 @@ const ProductsComponent = () => {
         <CustomGridComponent
           isLoading={isLoading}
           columns={columns}
-          // data={rowData}
-          data={rows}
+          data={rowData}
         />
       </CustomCard>
 
       <UserSelector
         open={openSelector}
-        setOpen={setOpenSelector}
-        product={product}
+        setOpen={(e) => handleSelectUsers(e)}
+        data={users}
+        handleSubmit={handleSubmitUser}
       />
     </>
   );

@@ -5,18 +5,22 @@ using SendGrid.Helpers.Mail;
 using SendGrid;
 using System.ComponentModel;
 using CLMS_BackEnd.Services.Users.Dto;
+using CLMS_BackEnd.Services.EmailServices;
 
 namespace CLMS_BackEnd.Services.ProductLicenses
 {
     public class ProductLicenseService : IProductLicenseService
     {
         private readonly IProductLicenseRepository _productLicenseRepository;
+        private readonly IEmailServices _emailService;
 
         public ProductLicenseService(
-          IProductLicenseRepository productLicenseRepository
+          IProductLicenseRepository productLicenseRepository,
+          IEmailServices emailService
           )
         {
             _productLicenseRepository = productLicenseRepository;
+            _emailService = emailService;
         }
 
 
@@ -190,21 +194,24 @@ namespace CLMS_BackEnd.Services.ProductLicenses
 
         public async Task<ResponseMessageDto> SendEmaisWithProductKey(SendEmaisWithProductKeyDto model)
         {
-            try {
-                var key = "";
+            try
+            {
                 var productLicenses = new List<ProductLicense>();
-                foreach(var item in model.Users) {
+                foreach (var item in model.Users)
+                {
                     var productLicense = new ProductLicense
                     {
                         ProductId = model.ProductId,
-                        Key = key,
+                        Key = item.Id,
                         UserId = item.Id,
                         IsActivated = false
                     };
                     productLicenses.Add(productLicense);
                 }
-               var result =  await _productLicenseRepository.InsertRangeProductLicense(productLicenses);
+                var result = await _productLicenseRepository.InsertRangeProductLicense(productLicenses);
 
+                var key = _emailService.GenerateRandomKey(12);
+                await _emailService.SendEmailAsync(key, model.Users);
                 if (result)
                 {
                     return new ResponseMessageDto()
@@ -223,7 +230,8 @@ namespace CLMS_BackEnd.Services.ProductLicenses
                     Error = true,
                 };
 
-            } catch(Exception)
+            }
+            catch (Exception)
             {
                 throw;
             }

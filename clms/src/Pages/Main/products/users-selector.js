@@ -5,47 +5,15 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Checkbox from "@mui/material/Checkbox";
-import Avatar from "@mui/material/Avatar";
 import { Divider } from "@mui/material";
-const DummyData = [
-  { id: 1, name: "Faraz" },
-  { id: 2, name: "Ahmed" },
-  { id: 3, name: "Sheikh" },
-  { id: 4, name: "bilal" },
-  { id: 5, name: "moosani" },
-  { id: 6, name: "Abdul" },
-  { id: 7, name: "rafay" },
-  { id: 8, name: "hadi" },
-  { id: 9, name: "zuhaib" },
-  { id: 10, name: "bisham" },
-];
-const UserSelector = ({ open, setOpen, product }) => {
-  //   const columns = [{ field: "name", headerName: "Name", width: 170 }];
+
+const UserSelector = ({ open, setOpen, data = [], handleSubmit }) => {
   const [checked, setChecked] = useState([1]);
-  const [usersList, setUsersList] = useState([]);
-
-  useEffect(() => {
-    fetchUsers();
-  });
-
-  const fetchUsers = () => {
-    setUsersList(DummyData);
-  };
 
   const handleClose = () => {
     setOpen(false);
     onModalClose();
-  };
-
-  const handleOk = () => {
-    console.log(checked);
-    let payload = {
-      users: usersList.filter((d) => checked.includes(d.id)),
-      productId: product?.id,
-    };
-    // hit api
   };
 
   const handleToggle = (value) => () => {
@@ -62,8 +30,11 @@ const UserSelector = ({ open, setOpen, product }) => {
   };
 
   const onModalClose = () => {
-    console.log("----");
     setChecked([]);
+  };
+
+  const handleOk = () => {
+    handleSubmit(checked);
   };
 
   return (
@@ -75,7 +46,7 @@ const UserSelector = ({ open, setOpen, product }) => {
       handleOk={handleOk}
     >
       <List dense sx={{ width: "20rem", bgcolor: "background.paper" }}>
-        {usersList.map((value) => {
+        {data.map((value) => {
           const labelId = `checkbox-list-secondary-label-${value.id}`;
           return (
             <>
@@ -92,13 +63,7 @@ const UserSelector = ({ open, setOpen, product }) => {
                 disablePadding
               >
                 <ListItemButton>
-                  {/* <ListItemAvatar>
-                  <Avatar
-                    alt={`Avatar n°${value + 1}`}
-                    src={`/static/images/avatar/${value + 1}.jpg`}
-                  />
-                </ListItemAvatar> */}
-                  <ListItemText id={labelId} primary={value.name} />
+                  <ListItemText id={labelId} primary={`${value?.email}`} />
                 </ListItemButton>
               </ListItem>
               <Divider />

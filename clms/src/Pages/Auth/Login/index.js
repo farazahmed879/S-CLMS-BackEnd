@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import CustomButton from "../../../Components/custom-button";
 import CustomCard from "../../../Components/custom-card";
-import { CardActions, CardContent, CardHeader, Grid } from "@mui/material";
+import { CardActions, CardContent, CardHeader, CircularProgress, Grid } from "@mui/material";
 import CustomInputComponent from "../../../Components/custom-input";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -12,6 +12,8 @@ import { AuthenticateEndPoints } from "../../../Configs/end-points";
 
 const RegisterComponent = () => {
   const [formType, setFormType] = useState(0);
+  const [isLoading, setIsloading] = useState(false);
+
   const navigate = useNavigate();
 
   const schema = yup.object().shape({
@@ -43,13 +45,24 @@ const RegisterComponent = () => {
         username: form.username,
         password: form.password,
       };
+
+      setIsloading(true);
       const result = await axios.post(AuthenticateEndPoints.login, data);
+      setIsloading(false);
+
       if (result) {
         localStorage.setItem("token", result?.data?.token);
-        navigate("/")
-
+        localStorage.setItem(
+          "userData",
+          JSON.stringify({
+            userId: result?.data?.userId,
+            role: result?.data?.role,
+          })
+        );
+        navigate("/");
       }
     } catch (errors) {
+      setIsloading(false);
       console.log(errors);
     }
   };
@@ -67,6 +80,7 @@ const RegisterComponent = () => {
             width: "500px",
           }}
         >
+          {isLoading && <CircularProgress />}
           <CustomCard style={{ width: 500 }}>
             <CardHeader></CardHeader>
             <CardContent>

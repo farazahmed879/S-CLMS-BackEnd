@@ -8,5 +8,10 @@ export const AuthenticateEndPoints ={
 
 export const EndPoints ={
     products : `${baseUrl}/Product`,
+
     productLicense : `${baseUrl}/ProductLicense`,
+    generateKey : `${baseUrl}/ProductLicense/generateKey`,
+    activateProduct : `${baseUrl}/ProductLicense/ActivateProduct`,
+
+    users : `${baseUrl}/User`
 }

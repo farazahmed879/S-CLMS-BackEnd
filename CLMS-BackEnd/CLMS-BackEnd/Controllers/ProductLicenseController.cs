@@ -55,6 +55,31 @@ namespace CLMS_BackEnd.Controllers
 
         }
 
+
+        [HttpPut("ActivateProduct")]
+        public async Task<ResponseMessageDto> ActivateProduct(CreateOrUpdateProductLicenseDto model)
+        {
+            try
+            {
+                return await _productLicenseService.ActivateProduct(model);
+
+            }
+            catch (Exception ex) { throw; }
+
+        }
+
+        [HttpPut("generateKey")]
+        public async Task<ResponseMessageDto> SendEmaisWithProductKey(SendEmaisWithProductKeyDto model)
+        {
+            try
+            {
+                return await _productLicenseService.SendEmaisWithProductKey(model);
+
+            }
+            catch (Exception ex) { throw; }
+
+        }
+
         // DELETE api/<ProductLicenseController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)

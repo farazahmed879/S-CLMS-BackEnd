@@ -18,7 +18,7 @@ namespace CLMS_BackEnd.Controllers
 
 
         [HttpGet]
-        public async Task<List<ProductList>> GetAll(string userId)
+        public async Task<List<ProductList>> GetAll(string? userId)
         {
             try
             {

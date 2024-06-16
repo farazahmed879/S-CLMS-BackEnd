@@ -22,7 +22,7 @@ namespace CLMS_BackEnd.Services.Users
                     Id = i.Id,
                     Email = i.Email,
                     Name = i.UserName,
-                    Type = ""
+
                 }).ToList();
 
             }

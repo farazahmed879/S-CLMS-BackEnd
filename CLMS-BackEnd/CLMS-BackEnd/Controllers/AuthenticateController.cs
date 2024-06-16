@@ -52,7 +52,7 @@ namespace CLMS_BackEnd.Controllers
                 var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
 
                 var token = new JwtSecurityToken(
-                    issuer: _configuration["JWT:ValidIssuer"],
+                    issuer: _configuration["JWT:/ValidIssuer"],
                     audience: _configuration["JWT:ValidAudience"],
                     expires: DateTime.Now.AddHours(3),
                     claims: authClaims,
@@ -62,7 +62,9 @@ namespace CLMS_BackEnd.Controllers
                 return Ok(new
                 {
                     token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo
+                    expiration = token.ValidTo,
+                    role = userRoles.Count() > 0 ? userRoles[0] : "user",
+                    userId = user.Id
                 });
             }
             return Unauthorized();
