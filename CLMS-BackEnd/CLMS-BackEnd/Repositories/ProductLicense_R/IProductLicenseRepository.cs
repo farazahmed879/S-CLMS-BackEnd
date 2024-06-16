@@ -15,6 +15,10 @@ namespace CLMS_BackEnd.Repositories.ProductLicense_R
 
         Task<bool> UpdateProductLicense(ProductLicense product_);
 
+        Task<ProductLicense> GetByProductAndUser(int producId, string userId);
+
+        Task<bool> InsertRangeProductLicense(List<ProductLicense> productLicense_);
+
         void SaveChanges();
     }
 }

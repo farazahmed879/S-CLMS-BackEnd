@@ -18,7 +18,7 @@ namespace CLMS_BackEnd.Services.Products
 
 
 
-        public async Task<List<ProductList>> GetAll()
+        public async Task<List<ProductList>> GetAll(string? userId)
         {
             var products = await _productRepository.GetProducts();
 
@@ -28,8 +28,9 @@ namespace CLMS_BackEnd.Services.Products
                     Id = x.Id,
                     Name = x.Name,
                     Description = x.Description,
-                    Version = x.Description
-
+                    Version = x.Description,
+                    IsActivated = userId != null ? x.License
+                    .Where(i => i.ProductId == x.Id && i.UserId == userId).Select(y => y.IsActivated).FirstOrDefault() : false
                 })
                 .ToList();
 

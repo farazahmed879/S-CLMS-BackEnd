@@ -1,4 +1,5 @@
-﻿using CLMS_BackEnd.Services.ProductLicenses.Dto;
+﻿using CLMS_BackEnd.Models;
+using CLMS_BackEnd.Services.ProductLicenses.Dto;
 using CLMS_BackEnd.Services.Products.Dto;
 
 namespace CLMS_BackEnd.Services.ProductLicenses
@@ -10,5 +11,9 @@ namespace CLMS_BackEnd.Services.ProductLicenses
         Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdateProductLicenseDto model);
 
         Task<ProductLicenseDetailsDto> Get(int id);
+
+        Task<ResponseMessageDto> ActivateProduct(CreateOrUpdateProductLicenseDto model);
+
+        Task<ResponseMessageDto> SendEmaisWithProductKey(SendEmaisWithProductKeyDto model);
     }
 }

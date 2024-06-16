@@ -1,6 +1,11 @@
 ﻿using CLMS_BackEnd.Models;
 using CLMS_BackEnd.Repositories.ProductLicense_R;
 using CLMS_BackEnd.Services.ProductLicenses.Dto;
+using SendGrid.Helpers.Mail;
+using SendGrid;
+using System.ComponentModel;
+using CLMS_BackEnd.Services.Users.Dto;
+
 namespace CLMS_BackEnd.Services.ProductLicenses
 {
     public class ProductLicenseService : IProductLicenseService
@@ -21,7 +26,7 @@ namespace CLMS_BackEnd.Services.ProductLicenses
             var products = await _productLicenseRepository.GetProducts();
 
             return products
-                .Where(i=> !productId.HasValue || i.ProductId == productId)
+                .Where(i => !productId.HasValue || i.ProductId == productId)
                 .Select(x => new ProductLicenseListDto
                 {
                     Id = x.Id,
@@ -108,12 +113,14 @@ namespace CLMS_BackEnd.Services.ProductLicenses
 
         private async Task<ResponseMessageDto> UpdateAsync(CreateOrUpdateProductLicenseDto model)
         {
+
             var data = new ProductLicense
             {
                 Id = model.Id.Value,
                 Key = model.Key,
                 UserId = model.UserId,
                 ProductId = model.ProductId,
+                IsActivated = false
             };
 
             var result = await _productLicenseRepository.UpdateProductLicense(data);
@@ -137,6 +144,89 @@ namespace CLMS_BackEnd.Services.ProductLicenses
                 Success = false,
                 Error = true,
             };
+        }
+
+
+        public async Task<ResponseMessageDto> ActivateProduct(CreateOrUpdateProductLicenseDto model)
+        {
+            try
+            {
+                var license = await _productLicenseRepository.GetByProductAndUser(model.ProductId, model.UserId);
+
+                if (model.Key != license.Key)
+                    throw new ArgumentException("Invalid Key");
+
+                license.IsActivated = true;
+
+                var result = await _productLicenseRepository.UpdateProductLicense(license);
+                _productLicenseRepository.SaveChanges();
+
+                if (result)
+                {
+                    return new ResponseMessageDto()
+                    {
+                        Id = 1,
+                        SuccessMessage = AppConsts.SuccessfullyUpdated,
+                        Success = true,
+                        Error = false,
+                    };
+                }
+                return new ResponseMessageDto()
+                {
+                    Id = 0,
+                    ErrorMessage = AppConsts.UpdateFailure,
+                    Success = false,
+                    Error = true,
+                };
+
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+        }
+
+
+        public async Task<ResponseMessageDto> SendEmaisWithProductKey(SendEmaisWithProductKeyDto model)
+        {
+            try {
+                var key = "";
+                var productLicenses = new List<ProductLicense>();
+                foreach(var item in model.Users) {
+                    var productLicense = new ProductLicense
+                    {
+                        ProductId = model.ProductId,
+                        Key = key,
+                        UserId = item.Id,
+                        IsActivated = false
+                    };
+                    productLicenses.Add(productLicense);
+                }
+               var result =  await _productLicenseRepository.InsertRangeProductLicense(productLicenses);
+
+                if (result)
+                {
+                    return new ResponseMessageDto()
+                    {
+                        Id = 1,
+                        SuccessMessage = AppConsts.SuccessfullyUpdated,
+                        Success = true,
+                        Error = false,
+                    };
+                }
+                return new ResponseMessageDto()
+                {
+                    Id = 0,
+                    ErrorMessage = AppConsts.UpdateFailure,
+                    Success = false,
+                    Error = true,
+                };
+
+            } catch(Exception)
+            {
+                throw;
+            }
         }
 
     }

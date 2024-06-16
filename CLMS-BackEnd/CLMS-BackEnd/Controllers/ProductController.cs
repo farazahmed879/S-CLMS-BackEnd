@@ -18,11 +18,11 @@ namespace CLMS_BackEnd.Controllers
 
 
         [HttpGet]
-        public async Task<List<ProductList>> GetAll()
+        public async Task<List<ProductList>> GetAll(string userId)
         {
             try
             {
-                var results = await _productService.GetAll();
+                var results = await _productService.GetAll(userId);
                 return results;
             }
             catch (Exception ex) { throw; }

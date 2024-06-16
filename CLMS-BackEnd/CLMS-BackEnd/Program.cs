@@ -2,6 +2,7 @@ using CLMS_BackEnd.Models;
 using CLMS_BackEnd.Repositories.ProductLicense_R;
 using CLMS_BackEnd.Repositories.Products;
 using CLMS_BackEnd.Repositories.User_R;
+using CLMS_BackEnd.Services.EmailServices;
 using CLMS_BackEnd.Services.ProductLicenses;
 using CLMS_BackEnd.Services.Products;
 using CLMS_BackEnd.Services.Users;
@@ -9,13 +10,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+builder.Services.AddScoped<IEmailServices, EmailServices>();
 
 builder.Services.AddScoped<IUserServices, UserServices>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();

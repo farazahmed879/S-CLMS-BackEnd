@@ -21,8 +21,16 @@ namespace CLMS_BackEnd.Repositories.ProductLicense_R
         }
         public async Task<ProductLicense> GetById(int Id)
         {
-            var result = await _dataContext.License.SingleOrDefaultAsync(i => i.Id == Id);
-            return result;
+            try
+            {
+                var result = await _dataContext.License.SingleOrDefaultAsync(i => i.Id == Id);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
         public async Task<List<ProductLicense>> GetProducts()
         {
@@ -35,6 +43,22 @@ namespace CLMS_BackEnd.Repositories.ProductLicense_R
                 return true;
             else return false;
         }
+
+        public async Task<bool> InsertRangeProductLicense(List<ProductLicense> productLicense_)
+        {
+            try
+            {
+                await _dataContext.License.AddRangeAsync(productLicense_);
+                return true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+
+            return true;
+        }
         public void SaveChanges()
         {
             _dataContext.SaveChanges();
@@ -45,6 +69,20 @@ namespace CLMS_BackEnd.Repositories.ProductLicense_R
             if (result1 != null)
                 return true;
             else return false;
+        }
+
+        public async Task<ProductLicense> GetByProductAndUser(int producId, string userId)
+        {
+            try
+            {
+                var result = await _dataContext.License.SingleOrDefaultAsync(i => i.ProductId == producId && i.UserId == userId);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
 
 

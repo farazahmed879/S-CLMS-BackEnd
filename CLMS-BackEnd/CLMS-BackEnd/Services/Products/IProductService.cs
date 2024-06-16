@@ -4,7 +4,7 @@ namespace CLMS_BackEnd.Services.Products
 {
     public interface IProductService
     {
-        Task<List<ProductList>> GetAll();
+        Task<List<ProductList>> GetAll(string? userId)
 
         Task<ResponseMessageDto> CreateOrEditAsync(CreateOrUpdateProductDto model);
 
