@@ -8,7 +8,6 @@ import { apiCall } from "../../../service/common-service";
 import { EndPoints } from "../../../Configs/end-points";
 import { Key } from "@mui/icons-material";
 import { S_Alert, UserRole, showSwalPopUp } from "../../../utils/helper";
-import CustomModal from "../../../Components/modal";
 import UserSelector from "./users-selector";
 
 const ProductsComponent = () => {
